@@ -1,0 +1,33 @@
+import { IsInt, IsArray, ValidateNested, IsString, IsBoolean } from 'class-validator'
+import { Type } from 'class-transformer'
+
+class CreateOpcionDto {
+  @IsString()
+  texto: string
+
+  @IsBoolean()
+  correcta: boolean
+}
+
+class CreatePreguntaDto {
+  @IsString()
+  texto: string
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateOpcionDto)
+  opciones: CreateOpcionDto[]
+}
+
+export class CreateQuizDto {
+  @IsInt()
+  leccionId: number
+
+  @IsInt()
+  minCorrectas: number
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreatePreguntaDto)
+  preguntas: CreatePreguntaDto[]
+}

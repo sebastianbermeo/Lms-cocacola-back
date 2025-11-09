@@ -22,6 +22,10 @@ export class CreateLeccionDto {
   @IsString()
   contenidoTexto: string;
 
+  @IsOptional()
+  @IsInt()
+  puntos?: number;
+
   @IsInt()
   moduloId: number; // FK al módulo
 }

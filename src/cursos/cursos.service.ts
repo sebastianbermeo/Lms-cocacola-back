@@ -17,10 +17,8 @@ export class CursosService {
     return this.cursosRepository.save(curso);
   }
 
-  findAll(): Promise<Curso[]> {
-    return this.cursosRepository.find({
-      relations: ['modulos'], // Incluye los módulos si existen
-    });
+  async findAll(): Promise<Curso[]> {
+    return this.cursosRepository.find({ relations: ['modulos'] });
   }
 
   async findOne(id: number): Promise<Curso> {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ModulosService } from './modulos.service';
 import { CreateModuloDto } from './dto/create-modulo.dto';
 import { UpdateModuloDto } from './dto/update-modulo.dto';
@@ -15,12 +15,7 @@ export class ModulosController {
   }
 
   @Get()
-  findAll(@Query('cursoId') cursoId?: number) {
-    if (cursoId) {
-      return this.modulosService.findAll().then((modulos) =>
-        modulos.filter((m) => m.curso?.id === Number(cursoId)),
-      );
-    }
+  findAll() {
     return this.modulosService.findAll();
   }
 

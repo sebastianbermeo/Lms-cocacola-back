@@ -11,29 +11,28 @@ export class ModulosService {
   constructor(
     @InjectRepository(Modulo)
     private readonly modulosRepository: Repository<Modulo>,
-
     @InjectRepository(Curso)
     private readonly cursosRepository: Repository<Curso>,
   ) {}
 
   async create(createModuloDto: CreateModuloDto): Promise<Modulo> {
-    const { cursoId, ...data } = createModuloDto;
-
-    const curso = await this.cursosRepository.findOne({ where: { id: cursoId } });
-    if (!curso) throw new NotFoundException(`Curso with ID ${cursoId} not found`);
+    const curso = await this.cursosRepository.findOne({
+      where: { id: createModuloDto.cursoId },
+    });
+    if (!curso) throw new NotFoundException('Curso not found');
 
     const modulo = this.modulosRepository.create({
-      ...data,
+      titulo: createModuloDto.titulo,
+      descripcion: createModuloDto.descripcion,
+      imagen: createModuloDto.imagen,
       curso,
     });
 
-    return await this.modulosRepository.save(modulo);
+    return this.modulosRepository.save(modulo);
   }
 
   async findAll(): Promise<Modulo[]> {
-    return this.modulosRepository.find({
-      relations: ['curso', 'lecciones'],
-    });
+    return this.modulosRepository.find({ relations: ['curso', 'lecciones'] });
   }
 
   async findOne(id: number): Promise<Modulo> {
@@ -47,15 +46,8 @@ export class ModulosService {
 
   async update(id: number, updateModuloDto: UpdateModuloDto): Promise<Modulo> {
     const modulo = await this.findOne(id);
-
-    if (updateModuloDto.cursoId) {
-      const curso = await this.cursosRepository.findOne({ where: { id: updateModuloDto.cursoId } });
-      if (!curso) throw new NotFoundException(`Curso with ID ${updateModuloDto.cursoId} not found`);
-      modulo.curso = curso;
-    }
-
     Object.assign(modulo, updateModuloDto);
-    return await this.modulosRepository.save(modulo);
+    return this.modulosRepository.save(modulo);
   }
 
   async remove(id: number): Promise<void> {

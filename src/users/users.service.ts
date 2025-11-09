@@ -18,7 +18,7 @@ export class UsersService {
   ) {}
 
   // Crear usuario
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
     const { roleId, password, ...rest } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -33,21 +33,23 @@ export class UsersService {
     const user = this.usersRepository.create({
       ...rest,
       password: hashedPassword,
-      role: role ?? undefined, // ✅ evita error de tipo Role | null
+      role: role ?? undefined,
+      points: 0, // inicia siempre en 0 por defecto
     });
 
-    return await this.usersRepository.save(user);
+    const savedUser = await this.usersRepository.save(user);
+    const { password: _, ...userWithoutPassword } = savedUser;
+    return userWithoutPassword;
   }
 
   // Listar todos los usuarios
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find({
-      relations: ['role'],
-    });
+  async findAll(): Promise<Omit<User, 'password'>[]> {
+    const users = await this.usersRepository.find({ relations: ['role'] });
+    return users.map(({ password, ...rest }) => rest);
   }
 
   // Buscar un usuario por ID
-  async findOne(id: number): Promise<User> {
+  async findOne(id: number): Promise<Omit<User, 'password'>> {
     const user = await this.usersRepository.findOne({
       where: { id },
       relations: ['role'],
@@ -55,7 +57,8 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return user;
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   // Buscar usuario por email (para Auth)
@@ -66,26 +69,45 @@ export class UsersService {
     });
   }
 
-  // Actualizar usuario
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
-    const { roleId, ...rest } = updateUserDto;
+  // Actualizar usuario (permite modificar puntos y otros campos)
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<Omit<User, 'password'>> {
+    const user = await this.usersRepository.findOne({ where: { id }, relations: ['role'] });
+    if (!user) throw new NotFoundException('User not found');
+
+    const { roleId, password, activo, points, ...rest } = updateUserDto;
 
     if (roleId) {
       const role = await this.rolesRepository.findOne({ where: { id: roleId } });
-      if (!role) {
-        throw new NotFoundException(`Role with ID ${roleId} not found`);
-      }
+      if (!role) throw new NotFoundException(`Role with ID ${roleId} not found`);
       user.role = role;
     }
 
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
+
+    if (activo !== undefined) {
+      user.activo = activo;
+    }
+
+    if (points !== undefined) {
+      user.points = points;
+    }
+
     Object.assign(user, rest);
-    return await this.usersRepository.save(user);
+
+    const updatedUser = await this.usersRepository.save(user);
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    return userWithoutPassword;
   }
 
   // Eliminar usuario
   async remove(id: number): Promise<void> {
-    const user = await this.findOne(id);
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
     await this.usersRepository.remove(user);
   }
 }

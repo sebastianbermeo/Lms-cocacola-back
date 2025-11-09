@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { LeccionService } from './leccion.service';
 import { CreateLeccionDto } from './dto/create-leccion.dto';
 import { UpdateLeccionDto } from './dto/update-leccion.dto';
@@ -15,13 +15,8 @@ export class LeccionController {
   }
 
   @Get()
-  findAll(@Query('moduloId') moduloId?: number) {
-    return this.leccionService.findAll().then((lecciones) => {
-      if (moduloId) {
-        return lecciones.filter((l) => l.modulo?.id === Number(moduloId));
-      }
-      return lecciones;
-    });
+  findAll() {
+    return this.leccionService.findAll();
   }
 
   @Get(':id')

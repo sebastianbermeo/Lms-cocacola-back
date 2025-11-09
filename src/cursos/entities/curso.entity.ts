@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Modulo } from 'src/modulos/entities/modulo.entity';
 
-@Entity('cursos')
+@Entity('curso')
 export class Curso {
   @PrimaryGeneratedColumn()
   id: number;
@@ -9,14 +9,13 @@ export class Curso {
   @Column()
   titulo: string;
 
-  @Column()
+  @Column({ nullable: true })
   descripcion: string;
 
-  @Column()
+  @Column({ nullable: true })
   imagen: string;
 
-  // Relación: un curso tiene muchos módulos
-  @OneToMany(() => Modulo, modulo => modulo.curso)
+  @OneToMany(() => Modulo, (modulo) => modulo.curso, { cascade: true })
   modulos: Modulo[];
 
   @CreateDateColumn({ type: 'timestamp' })

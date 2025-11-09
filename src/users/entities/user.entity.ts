@@ -20,18 +20,24 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: false })
+  @Column()
   password: string;
 
   @ManyToOne(() => Role, (role) => role.users, {
     eager: true,
-    onDelete: 'SET NULL'
+    onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
   @Column({ nullable: true })
   imageUrl: string;
+
+  @Column({ default: true })
+  activo: boolean;
+
+  @Column({ type: 'int', default: 0 })
+  points: number;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
