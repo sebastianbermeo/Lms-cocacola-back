@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Leccion } from './entities/leccion.entity';
-import { CreateLeccionDto } from './dto/create-leccion.dto';
-import { UpdateLeccionDto } from './dto/update-leccion.dto';
-import { Modulo } from 'src/modulos/entities/modulo.entity';
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { Leccion } from './entities/leccion.entity'
+import { CreateLeccionDto } from './dto/create-leccion.dto'
+import { UpdateLeccionDto } from './dto/update-leccion.dto'
+import { Modulo } from 'src/modulos/entities/modulo.entity'
 
 @Injectable()
 export class LeccionService {
@@ -18,37 +18,39 @@ export class LeccionService {
   async create(createLeccionDto: CreateLeccionDto): Promise<Leccion> {
     const modulo = await this.modulosRepository.findOne({
       where: { id: createLeccionDto.moduloId },
-    });
-    if (!modulo) throw new NotFoundException('Modulo not found');
+    })
+    if (!modulo) throw new NotFoundException('Modulo not found')
 
     const leccion = this.leccionRepository.create({
       ...createLeccionDto,
       modulo,
-    });
-    return this.leccionRepository.save(leccion);
+    })
+    return this.leccionRepository.save(leccion)
   }
 
   async findAll(): Promise<Leccion[]> {
-    return this.leccionRepository.find({ relations: ['modulo'] });
+    return this.leccionRepository.find({
+      relations: ['modulo', 'quiz'],
+    })
   }
 
   async findOne(id: number): Promise<Leccion> {
     const leccion = await this.leccionRepository.findOne({
       where: { id },
-      relations: ['modulo'],
-    });
-    if (!leccion) throw new NotFoundException('Leccion not found');
-    return leccion;
+      relations: ['modulo', 'quiz'],
+    })
+    if (!leccion) throw new NotFoundException('Leccion not found')
+    return leccion
   }
 
   async update(id: number, updateLeccionDto: UpdateLeccionDto): Promise<Leccion> {
-    const leccion = await this.findOne(id);
-    Object.assign(leccion, updateLeccionDto);
-    return this.leccionRepository.save(leccion);
+    const leccion = await this.findOne(id)
+    Object.assign(leccion, updateLeccionDto)
+    return this.leccionRepository.save(leccion)
   }
 
   async remove(id: number): Promise<void> {
-    const leccion = await this.findOne(id);
-    await this.leccionRepository.remove(leccion);
+    const leccion = await this.findOne(id)
+    await this.leccionRepository.remove(leccion)
   }
 }

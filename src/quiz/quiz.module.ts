@@ -5,10 +5,12 @@ import { QuizController } from './quiz.controller'
 import { Quiz } from './entities/quiz.entity'
 import { Pregunta } from './entities/pregunta.entity'
 import { Opcion } from './entities/opcion.entity'
+import { QuizResultado } from './entities/quiz-resultado.entity'
 import { Leccion } from 'src/leccion/entities/leccion.entity'
+import { User } from 'src/users/entities/user.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Quiz, Pregunta, Opcion, Leccion])],
+  imports: [TypeOrmModule.forFeature([Quiz, Pregunta, Opcion, QuizResultado, Leccion, User])],
   controllers: [QuizController],
   providers: [QuizService],
 })

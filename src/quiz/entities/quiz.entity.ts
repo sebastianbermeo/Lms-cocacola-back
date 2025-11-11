@@ -2,10 +2,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
-  OneToMany,
+  OneToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm'
 import { Leccion } from 'src/leccion/entities/leccion.entity'
 import { Pregunta } from './pregunta.entity'
@@ -18,10 +18,14 @@ export class Quiz {
   @Column()
   minCorrectas: number
 
-  @ManyToOne(() => Leccion, (leccion) => leccion.quizzes, { onDelete: 'CASCADE' })
+  @Column({ type: 'int', default: 0 })
+  puntos: number
+
+  @OneToOne(() => Leccion, (leccion) => leccion.quiz, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'leccion_id' })
   leccion: Leccion
 
-  @OneToMany(() => Pregunta, (pregunta) => pregunta.quiz, { cascade: true })
+  @OneToOne(() => Pregunta, (pregunta) => pregunta.quiz, { cascade: true })
   preguntas: Pregunta[]
 
   @CreateDateColumn()

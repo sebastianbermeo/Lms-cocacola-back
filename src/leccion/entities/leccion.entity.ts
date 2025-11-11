@@ -3,50 +3,47 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  OneToMany,
+  OneToOne,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
-} from 'typeorm';
-import { Modulo } from 'src/modulos/entities/modulo.entity';
+} from 'typeorm'
+import { Modulo } from 'src/modulos/entities/modulo.entity'
 import { Quiz } from 'src/quiz/entities/quiz.entity'
 
 @Entity('leccion')
 export class Leccion {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Column()
-  titulo: string;
+  titulo: string
 
   @Column()
-  descripcion: string;
+  descripcion: string
 
   @Column()
-  imagen: string;
+  imagen: string
 
   @Column({ nullable: true })
-  videoUrl: string;
+  videoUrl: string
 
   @Column('text', { array: true, nullable: true })
-  archivos: string[];
+  archivos: string[]
 
   @Column('text')
-  contenidoTexto: string;
-
-  @Column({ type: 'int', default: 0 })
-  puntos: number;
+  contenidoTexto: string
 
   @ManyToOne(() => Modulo, (modulo) => modulo.lecciones, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'modulo_id' })
-  modulo: Modulo;
+  modulo: Modulo
 
-  @OneToMany(() => Quiz, (quiz) => quiz.leccion, { cascade: true })
-  quizzes: Quiz[]
+  @OneToOne(() => Quiz, (quiz) => quiz.leccion, { cascade: true })
+  quiz: Quiz
 
   @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
+  createdAt: Date
 
   @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
+  updatedAt: Date
 }

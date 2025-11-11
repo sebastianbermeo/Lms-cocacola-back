@@ -1,4 +1,4 @@
-import { IsInt, IsArray, ValidateNested, IsString, IsBoolean } from 'class-validator'
+import { IsInt, IsArray, ValidateNested, IsString, IsBoolean, Min } from 'class-validator'
 import { Type } from 'class-transformer'
 
 class CreateOpcionDto {
@@ -24,7 +24,12 @@ export class CreateQuizDto {
   leccionId: number
 
   @IsInt()
+  @Min(0)
   minCorrectas: number
+
+  @IsInt()
+  @Min(0)
+  puntos: number
 
   @IsArray()
   @ValidateNested({ each: true })

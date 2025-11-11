@@ -31,4 +31,12 @@ export class QuizController {
   remove(@Param('id') id: string) {
     return this.quizService.remove(+id)
   }
+
+  @Post(':id/submit')
+  submit(
+    @Param('id') id: string,
+    @Body() payload: { userId: number; answers: { preguntaId: number; opcionId: number }[] },
+  ) {
+    return this.quizService.submit(+id, payload)
+  }
 }

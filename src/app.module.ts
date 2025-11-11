@@ -24,7 +24,7 @@ import { QuizModule } from './quiz/quiz.module';
       // password: process.env.DB_PASS,
       // database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: false, // ⚠️ Cambia a true solo en desarrollo local
+      synchronize: true, // ⚠️ Cambia a true solo en desarrollo local
       logging: true,
     }),
     RolesModule,

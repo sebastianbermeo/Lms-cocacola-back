@@ -1,31 +1,27 @@
-import { IsString, IsOptional, IsArray, IsInt, MinLength } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsInt, MinLength } from 'class-validator'
 
 export class CreateLeccionDto {
   @IsString()
   @MinLength(3)
-  titulo: string;
+  titulo: string
 
   @IsString()
-  descripcion: string;
+  descripcion: string
 
   @IsString()
-  imagen: string;
+  imagen: string
 
   @IsOptional()
   @IsString()
-  videoUrl?: string;
+  videoUrl?: string
 
   @IsOptional()
   @IsArray()
-  archivos?: string[];
+  archivos?: string[]
 
   @IsString()
-  contenidoTexto: string;
-
-  @IsOptional()
-  @IsInt()
-  puntos?: number;
+  contenidoTexto: string
 
   @IsInt()
-  moduloId: number; // FK al módulo
+  moduloId: number
 }
