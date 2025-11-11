@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToOne,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
@@ -22,10 +23,10 @@ export class Quiz {
   puntos: number
 
   @OneToOne(() => Leccion, (leccion) => leccion.quiz, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'leccion_id' })
+  @JoinColumn()
   leccion: Leccion
 
-  @OneToOne(() => Pregunta, (pregunta) => pregunta.quiz, { cascade: true })
+  @OneToMany(() => Pregunta, (pregunta) => pregunta.quiz, { cascade: true, eager: true })
   preguntas: Pregunta[]
 
   @CreateDateColumn()

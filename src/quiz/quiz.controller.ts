@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, Patch, ParseIntPipe } from '@nestjs/common'
 import { QuizService } from './quiz.service'
 import { CreateQuizDto } from './dto/create-quiz.dto'
 import { UpdateQuizDto } from './dto/update-quiz.dto'
+import type { SubmitPayload } from './quiz.service'
 
 @Controller('quiz')
 export class QuizController {
@@ -18,25 +19,30 @@ export class QuizController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.quizService.findOne(+id)
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.quizService.findOne(id)
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateQuizDto) {
-    return this.quizService.update(+id, dto)
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateQuizDto) {
+    return this.quizService.update(id, dto)
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.quizService.remove(+id)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.quizService.remove(id)
   }
 
   @Post(':id/submit')
-  submit(
-    @Param('id') id: string,
-    @Body() payload: { userId: number; answers: { preguntaId: number; opcionId: number }[] },
+  submit(@Param('id', ParseIntPipe) id: number, @Body() payload: SubmitPayload) {
+    return this.quizService.submit(id, payload)
+  }
+
+  @Get('resultado/:userId/:quizId')
+  getResultado(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('quizId', ParseIntPipe) quizId: number,
   ) {
-    return this.quizService.submit(+id, payload)
+    return this.quizService.getResultado(userId, quizId)
   }
 }

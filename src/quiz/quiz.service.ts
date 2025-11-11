@@ -39,6 +39,7 @@ export class QuizService {
         }),
       ),
     })
+
     return this.quizRepo.save(quiz)
   }
 
@@ -64,7 +65,7 @@ export class QuizService {
       minCorrectas: dto.minCorrectas ?? quiz.minCorrectas,
       puntos: dto.puntos ?? quiz.puntos,
     })
-    return await this.quizRepo.save(quiz)
+    return this.quizRepo.save(quiz)
   }
 
   async remove(id: number) {
@@ -89,9 +90,7 @@ export class QuizService {
       where: { user: { id: userId }, quiz: { id: quizId } },
       relations: ['user', 'quiz'],
     })
-    if (existente) {
-      throw new ForbiddenException('El quiz ya fue realizado por este usuario')
-    }
+    if (existente) throw new ForbiddenException('El quiz ya fue realizado por este usuario')
 
     const opcionesPorPregunta = new Map<number, Opcion>()
     quiz.preguntas.forEach((preg) => {
@@ -101,9 +100,7 @@ export class QuizService {
     let correctas = 0
     for (const { preguntaId, opcionId } of answers) {
       const opcion = opcionesPorPregunta.get(opcionId)
-      if (opcion && opcion.pregunta && opcion.pregunta.id === preguntaId && opcion.correcta) {
-        correctas += 1
-      }
+      if (opcion && opcion.correcta) correctas += 1
     }
 
     const aprobado = correctas >= quiz.minCorrectas
@@ -131,5 +128,14 @@ export class QuizService {
       puntosOtorgados: aprobado ? quiz.puntos : 0,
       puntosUsuario: user.points ?? 0,
     }
+  }
+
+  async getResultado(userId: number, quizId: number) {
+    const resultado = await this.resultadoRepo.findOne({
+      where: { user: { id: userId }, quiz: { id: quizId } },
+      relations: ['quiz', 'user'],
+    })
+    if (!resultado) return null
+    return resultado
   }
 }
