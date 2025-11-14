@@ -13,8 +13,14 @@ export class AuthService {
   async validateUser(email: string, pass: string) {
     const user = await this.usersService.findByEmail(email)
     if (!user) throw new UnauthorizedException('Invalid credentials')
+
+    if (!user.activo) {
+      throw new UnauthorizedException('La cuenta se encuentra deshabilitada')
+    }
+
     const match = await bcrypt.compare(pass, user.password)
     if (!match) throw new UnauthorizedException('Invalid credentials')
+
     return user
   }
 
@@ -23,6 +29,7 @@ export class AuthService {
     const payload = { sub: user.id, email: user.email, role: user.role?.name || user.role }
     const access_token = await this.jwtService.signAsync(payload)
     const { password: _, ...userWithoutPassword } = user
+
     return {
       message: 'Login successful',
       access_token,

@@ -8,6 +8,8 @@ import { CursosModule } from './cursos/cursos.module';
 import { ModulosModule } from './modulos/modulos.module';
 import { LeccionModule } from './leccion/leccion.module';
 import { QuizModule } from './quiz/quiz.module';
+import { PremiosModule } from './premios/premios.module';
+import { PremioUsuarioModule } from './premio-usuario/premio-usuario.module';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { QuizModule } from './quiz/quiz.module';
       // password: process.env.DB_PASS,
       // database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true, // ⚠️ Cambia a true solo en desarrollo local
+      synchronize: false, // ⚠️ Cambia a true solo en desarrollo local
       logging: true,
     }),
     RolesModule,
@@ -34,6 +36,8 @@ import { QuizModule } from './quiz/quiz.module';
     ModulosModule,
     LeccionModule,
     QuizModule,
+    PremiosModule,
+    PremioUsuarioModule,
   ],
 })
 export class AppModule {}
