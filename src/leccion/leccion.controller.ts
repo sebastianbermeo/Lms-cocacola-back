@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { LeccionService } from './leccion.service';
-import { CreateLeccionDto } from './dto/create-leccion.dto';
-import { UpdateLeccionDto } from './dto/update-leccion.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  UploadedFiles,
+  Body,
+} from '@nestjs/common'
+import { FileFieldsInterceptor } from '@nestjs/platform-express'
+import { LeccionService } from './leccion.service'
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
+import type { Express } from 'express'
 
 @UseGuards(JwtAuthGuard)
 @Controller('leccion')
@@ -10,27 +21,36 @@ export class LeccionController {
   constructor(private readonly leccionService: LeccionService) {}
 
   @Post()
-  create(@Body() createLeccionDto: CreateLeccionDto) {
-    return this.leccionService.create(createLeccionDto);
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'archivos', maxCount: 20 }
+    ])
+  )
+  create(
+    @UploadedFiles() files: { archivos?: Express.Multer.File[] },
+    @Body() body: any
+  ) {
+    const archivos = files.archivos || []
+    return this.leccionService.createWithFiles(body, archivos)
   }
 
   @Get()
   findAll() {
-    return this.leccionService.findAll();
+    return this.leccionService.findAll()
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.leccionService.findOne(+id);
+    return this.leccionService.findOne(+id)
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLeccionDto: UpdateLeccionDto) {
-    return this.leccionService.update(+id, updateLeccionDto);
+  update(@Param('id') id: string, @Body() body: any) {
+    return this.leccionService.update(+id, body)
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.leccionService.remove(+id);
+    return this.leccionService.remove(+id)
   }
 }

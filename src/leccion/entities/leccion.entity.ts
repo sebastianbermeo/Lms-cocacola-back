@@ -22,11 +22,11 @@ export class Leccion {
   @Column()
   descripcion: string
 
-  @Column()
-  imagen: string
+  @Column({ type: 'text', nullable: true })
+  imagen: string | null
 
-  @Column({ nullable: true })
-  videoUrl: string
+  @Column({ type: 'text', nullable: true })
+  videoUrl: string | null
 
   @Column('text', { array: true, nullable: true })
   archivos: string[]
